@@ -3,10 +3,10 @@ A simple set of R functions providing a workflow for reviewing EGM machine flux 
 
 ## Usage
 
-    source('Desktop/EGM_flux_inspection.R')
+    source('EGM_flux_inspection.R')
 	
     # This combines a set of .DAT files in a directory into a single dataframe
-	data <- egm_file_merge('Desktop/TFE_Carbon_Project/CO2')
+	data <- egm_file_merge('path/to/directory')
 	
 	# This opens a graphics window and starts a loop over all of the
 	# flux records. Click in the bottom axis margin to set how many initial
