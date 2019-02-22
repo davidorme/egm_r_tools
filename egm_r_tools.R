@@ -47,12 +47,12 @@ egm_inspect <- function(data, start_time=9, CO2_min=300, CO2_max=1000){
 	
 	plot_record <- function(rec, idx, n_idx, start){
 		
-		par(mar=c(4,3,3,1), mgp=c(1.3, 0.4, 0))
+		par(mar=c(4,3,1,1), mgp=c(1.3, 0.4, 0))
 
 		plot(CO2.Ref ~ Input.E, data=rec, 
 			 col = ifelse(ignore, 'red', 'black'), 
 			 pch = ifelse(ignore, 3, 1), 
-			 xlab='Time', ylab=expression(CO[2]))
+			 xlab='Time' , ylab=expression(paste('[', CO[2], ']')))
 			 
 		if(sum(! rec$ignore) > 1){
 			mod <- lm(CO2.Ref ~ Input.E, subset=! ignore, data=rec)
@@ -65,14 +65,18 @@ egm_inspect <- function(data, start_time=9, CO2_min=300, CO2_max=1000){
 		abline(v=start, col='red', lty=2)
 		
 		# display information
-		legend('topleft', sprintf('slope = %0.3f', slope), bty='n')
-		mtext(sprintf('Source: %s\nPlot: %i', rec$Source[1], rec$Plot[1]),
+		legend('topleft',  bty='n', cex=c(1, 0.8, 0.8, 0.8, 0.8),
+			   legend=c(sprintf('Slope = %0.3f', slope), "",
+			   			sprintf('Source: %s', rec$Source[1]),
+						sprintf('Plot: %i', rec$Plot[1]), 
+						sprintf('Record: %i of %i', idx, n_idx)))
+								
+		mtext(paste0('Click in Time margin to adjust start time filter, click on individual\n',
+				     'points to omit them or press Escape to move to next record '), 
 			  side=1, line=3, cex=0.8)
-		mtext(sprintf('Inspecting %i of %i', idx, n_idx), side=3, line=2)
-		mtext(paste0('Click in Time margin to adjust start time filter, ',
-				     'click on point to ignore individual points,\n',
-				     'press Escape to move to next record or ',
-				     'click here to exit inspection'), side=3, line=0, cex=0.8)
+
+		btn_pos <-  diff(par('usr')[1:2]) * c(1/6, 3/6, 5/6) + par('usr')[1]
+	  	mtext(c('Back', 'Skip', 'Quit'), at= btn_pos, side=3, line=0.5, cex=1.2)
 			  
 	}
 
@@ -125,14 +129,30 @@ egm_inspect <- function(data, start_time=9, CO2_min=300, CO2_max=1000){
 		# from the locator() calls (returning a null pointxy)
 		plot_record(this_rec, idx, n_recs, this_start_time)				   
 		pointxy <-  locator(1)
-
+		
+		scanned <- TRUE
+		
 		while(! is.null(pointxy)){
 			
 			# Three options:
 			if(pointxy$y > par('usr')[4]){
-				# i) user clicked in top margin so set flags to exit inspection				
-				exit <- TRUE
+				# i) user clicked in top margin so find which action is required
+				button_limits <- diff(par('usr')[1:2]) * c(0/6, 2/6, 4/6) + par('usr')[1]
+				
+				if(pointxy$x > button_limits[3]){
+					# quit
+					exit <- TRUE
+				} else if(pointxy$x > button_limits[2]){
+					# skip
+					scanned <- FALSE
+				} else {
+					# back, as long as we aren't at the first record
+					idx <- max(0, idx - 2)
+				}
+				
+				# set pointxy to NULL to break out of while loop
 				pointxy <- NULL
+				
 			} else if(pointxy$y < par('usr')[3]){ 
 				# ii) user clicked in bottom margin, which updates the start_time
 				#     filter of the initial values to ignore
@@ -162,7 +182,7 @@ egm_inspect <- function(data, start_time=9, CO2_min=300, CO2_max=1000){
 		# now overwrite the ignore values in the rows in the full data
 		# with the set created by the user and set the scanned rows to TRUE
 		data$ignore[this_rec_rows] <- this_rec$ignore
-		data$scanned[this_rec_rows] <- TRUE
+		data$scanned[this_rec_rows] <- scanned
 		
 		# move to next record
 		idx <- idx + 1	
