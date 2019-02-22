@@ -54,12 +54,18 @@ egm_inspect <- function(data, start_time=9, CO2_min=300, CO2_max=1000){
 			 pch = ifelse(ignore, 3, 1), 
 			 xlab='Time', ylab=expression(CO[2]))
 			 
-		mod <- lm(CO2.Ref ~ Input.E, subset=! ignore, data=rec)
-		abline(mod)
+		if(sum(! rec$ignore) > 1){
+			mod <- lm(CO2.Ref ~ Input.E, subset=! ignore, data=rec)
+			abline(mod)
+			slope <- coef(mod)[2]
+		} else {
+			slope <- NA
+		}
+		
 		abline(v=start, col='red', lty=2)
 		
 		# display information
-		legend('topleft', sprintf('slope = %0.3f', coef(mod)[2]), bty='n')
+		legend('topleft', sprintf('slope = %0.3f', slope), bty='n')
 		mtext(sprintf('Source: %s\nPlot: %i', rec$Source[1], rec$Plot[1]),
 			  side=1, line=3, cex=0.8)
 		mtext(sprintf('Inspecting %i of %i', idx, n_idx), side=3, line=2)
