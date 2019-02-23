@@ -47,7 +47,7 @@ egm_inspect <- function(data, start_time=9, CO2_min=300, CO2_max=1000){
 	
 	plot_record <- function(rec, idx, n_idx, start){
 		
-		par(mar=c(4,3,1,1), mgp=c(1.3, 0.4, 0))
+		par(mar=c(4,3,2,1), mgp=c(1.3, 0.4, 0))
 
 		plot(CO2.Ref ~ Input.E, data=rec, 
 			 col = ifelse(ignore, 'red', 'black'), 
