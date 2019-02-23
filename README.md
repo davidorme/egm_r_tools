@@ -17,12 +17,15 @@ each EGM record in sequence. The plot window shows the initial slope,
 along with the source file, the plot number of the record and a progress
 counter across the total number of records.
 
-    data <- egm_inspect(data, start_time=9, CO2_min=300, CO2_max=1000
+    data <- egm_inspect(data, start_time=9, CO2_min=300, CO2_max=1000)
 
 The three other arguments set automatical exclusion filters: points up
 to `start_time` to exclude short transient effects and extreme CO2 values.
-Within the plot window, you can adjust which points are excluded. Click
-in the Time axis to adjust the start time filter and click on individual
+Within the plot window, you can adjust which points are excluded. 
+
+![Example record](example.png?raw=true "Example record")
+
+Click in the Time axis to adjust the start time filter and click on individual
 points to toggle whether they are excluded or not. When you have finished
 with a particular record, press Escape to advance to the next.
 
