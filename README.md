@@ -42,4 +42,10 @@ and returns the flux estimate for each record, given the points omitted
 during inspection.
 
     flux <- egm_flux(data)
-   
+
+## TODO
+
+Quickfit breakpoint
+
+	mod <- nls(CO2.Ref ~ aa + bb * Input.E + cc * (Input.E > dd) * (Input.E - dd), 
+			   data=rec, list(aa=rec$Input.E[1], bb = 0.5, cc=0.5, dd=mean(rec$Input.E)))

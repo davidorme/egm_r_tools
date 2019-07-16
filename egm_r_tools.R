@@ -210,12 +210,18 @@ egm_flux <- function(data){
 		
 		rec <- data[data$Plot == recs$Plot[idx] &
 					data$Source == recs$Source[idx], ]
+		nr <- nrow(rec)
 		
-		mod <- lm(CO2.Ref ~ Input.E, subset=! ignore, data=rec)
+		if(sum(rec$ignore) < nr){
+			mod <- lm(CO2.Ref ~ Input.E, subset=! ignore, data=rec)
+			recs$slope[idx] <- coef(mod)[2]
+			recs$n_used[idx] <- length(resid(mod))
+		} else {
+			recs$slope[idx] <- NA
+			recs$n_used[idx] <- 0
+		}
 		
-		recs$slope[idx] <- coef(mod)[2]
-		recs$n_points[idx] <- nrow(rec)
-		recs$n_used[idx] <- length(resid(mod))
+		recs$n_points[idx] <- nr
 
 	}
 	
